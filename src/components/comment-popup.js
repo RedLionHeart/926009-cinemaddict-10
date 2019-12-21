@@ -1,5 +1,5 @@
-export const createCommentTemplate = (commentData) => {
-  const {comment, emoji, author, date} = commentData;
+export const createCommentTemplate = (commentTemplate) => {
+  const {comment, emoji, author, date} = commentTemplate;
 
   return `<li class="film-details__comment">
             <span class="film-details__comment-emoji">

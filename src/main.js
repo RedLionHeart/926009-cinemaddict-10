@@ -14,22 +14,32 @@ import {createCommentTemplate} from "./components/comment-popup";
 import {createFooterStatistic} from "./components/footer-statistic";
 
 
-export const FilmCount = {
+const FilmCount = {
   ALL: 15,
   TOP_RATED: 2,
   MOST_COMMENTED: 2,
 };
-const SHOWING_CARDS_COUNT_ON_START = 5;
-const SHOWING_CARDS_COUNT_BY_BUTTON = 5;
-const COMMENTS_COUNT = 4;
+
+const SomeCount = {
+  SHOWING_CARDS_COUNT_ON_START: 5,
+  SHOWING_CARDS_COUNT_BY_BUTTON: 5,
+  COMMENTS_COUNT: 4,
+};
+
 
 const siteMain = document.querySelector(`.main`);
 const siteHeader = document.querySelector(`.header`);
 const body = document.querySelector(`body`);
 const filters = generateFilters();
+const cards = generateCards(FilmCount.ALL);
+let watchedFilmsCount = 0;
+cards.forEach((card) => {
+  if (card.alreadyWatched) {
+    watchedFilmsCount++;
+  }
+});
 
-
-render(siteHeader, `beforeend`, createProfileTemplate());
+render(siteHeader, `beforeend`, createProfileTemplate(watchedFilmsCount));
 render(siteMain, `afterbegin`, createMainNavigationTemplate(filters));
 render(siteMain, `beforeend`, createFiltersTemplate());
 render(siteMain, `beforeend`, createFilmsContainerTemplate());
@@ -39,20 +49,20 @@ const filmsUnusualList = siteMain.querySelectorAll(`.films-list--extra .films-li
 
 const defaultFilmsContainer = filmsList.querySelector(`.films-list__container`);
 const footerStatistic = body.querySelector(`.footer__statistics`);
-const cards = generateCards(FilmCount.ALL);
+
 const popup = generatePopup();
-const comments = generateCommentsMarkup(COMMENTS_COUNT);
+const comments = generateCommentsMarkup(SomeCount.COMMENTS_COUNT);
 
 render(filmsList, `beforeend`, createButtonShowMoreTemplate());
 
-let showingCardsCount = SHOWING_CARDS_COUNT_ON_START;
+let showingCardsCount = SomeCount.SHOWING_CARDS_COUNT_ON_START;
 cards.slice(0, showingCardsCount)
   .forEach((card) => render(defaultFilmsContainer, `afterbegin`, createFilmCardTemplate(card)));
 
 const showMoreButton = filmsList.querySelector(`.films-list__show-more`);
 showMoreButton.addEventListener(`click`, () => {
   const prevTasksCount = showingCardsCount;
-  showingCardsCount = showingCardsCount + SHOWING_CARDS_COUNT_BY_BUTTON;
+  showingCardsCount = showingCardsCount + SomeCount.SHOWING_CARDS_COUNT_BY_BUTTON;
 
   cards.slice(prevTasksCount, showingCardsCount)
     .forEach((card) => render(defaultFilmsContainer, `beforeend`, createFilmCardTemplate(card)));
@@ -66,10 +76,10 @@ render(body, `beforeend`, createPopupTemplate(popup));
 const commentsContainer = body.querySelector(`.film-details__comments-list`);
 comments.forEach((comment) => render(commentsContainer, `afterbegin`, createCommentTemplate(comment)));
 
-render(footerStatistic, `afterbegin`, createFooterStatistic());
+render(footerStatistic, `afterbegin`, createFooterStatistic(FilmCount.ALL));
 
-const topRatedFilms = cards.slice().sort((a, b) => b.rating - a.rating).slice(0, 2);
-const mostCommented = cards.slice().sort((a, b) => b.comments - a.comments).slice(0, 2);
+const topRatedFilms = cards.slice().sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating)).slice(0, FilmCount.TOP_RATED);
+const mostCommented = cards.slice().sort((a, b) => parseFloat(b.comments) - parseFloat(a.comments)).slice(0, FilmCount.MOST_COMMENTED);
 
 topRatedFilms.forEach((card) =>{
   if (card.rating !== undefined) {

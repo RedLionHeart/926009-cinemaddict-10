@@ -30,14 +30,12 @@ const CommentsDate = [
   getRandomCommentDate(),
 ];
 
-const generateComment = () => {
-  return {
-    comment: getRandomArrayItem(Comments),
-    emoji: getRandomArrayItem(Emoji),
-    author: getRandomArrayItem(Names),
-    date: getRandomArrayItem(CommentsDate),
-  };
-};
+const generateComment = () => ({
+  comment: getRandomArrayItem(Comments),
+  emoji: getRandomArrayItem(Emoji),
+  author: getRandomArrayItem(Names),
+  date: getRandomArrayItem(CommentsDate),
+});
 
 export const generateCommentsMarkup = (count) => {
   return new Array(count)

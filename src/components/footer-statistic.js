@@ -1,5 +1,3 @@
-import {FilmCount} from "../main";
-
-export const createFooterStatistic = () => {
-  return `<p>${FilmCount.ALL} movies inside</p>`;
+export const createFooterStatistic = (filmsCount) => {
+  return `<p>${filmsCount} movies inside</p>`;
 };

@@ -7,7 +7,7 @@ const createFilterMarkup = (filter) => {
 };
 
 export const createMainNavigationTemplate = (filters) => {
-  const filtersMarkup = filters.map((it) => createFilterMarkup(it)).join(`\n`);
+  const filtersMarkup = filters.map(createFilterMarkup).join(`\n`);
 
   return (
     `<section class="main__filter filter container">

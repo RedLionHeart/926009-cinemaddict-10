@@ -51,18 +51,17 @@ const getFilmDuration = () => {
 };
 
 // Создаем карточку фильма.
-const generateCard = () => {
-  return {
-    name: getRandomArrayItem(FILMS_NAMES),
-    poster: getRandomArrayItem(Posters),
-    description: new Set(generateDescriptionCard(DescriptionSentences)),
-    year: getFilmYear(),
-    rating: getRating(),
-    duration: getFilmDuration(),
-    genre: getRandomArrayItem(FilmsGenres),
-    comments: getRandomIntegerNumber(0, 50),
-  };
-};
+const generateCard = () => ({
+  name: getRandomArrayItem(FILMS_NAMES),
+  poster: getRandomArrayItem(Posters),
+  description: new Set(generateDescriptionCard(DescriptionSentences)),
+  year: getFilmYear(),
+  rating: getRating(),
+  duration: getFilmDuration(),
+  genre: getRandomArrayItem(FilmsGenres),
+  comments: getRandomIntegerNumber(0, 50),
+  alreadyWatched: (Math.random() > 0.5),
+});
 
 // Создаем массив объектов карточек.
 const generateCards = (count) => {

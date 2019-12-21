@@ -33,20 +33,18 @@ const getFilmsGenres = () => {
   return FilmsGenres.filter(()=> Math.random() > 0.5);
 };
 
-const generatePopup = () => {
-  return {
-    name: getRandomArrayItem(FILMS_NAMES),
-    poster: getRandomArrayItem(Posters),
-    originalName: getRandomArrayItem(FILMS_NAMES),
-    rating: getRating(),
-    director: getRandomArrayItem(Names),
-    writers: getNames(Names),
-    actors: getNames(Names),
-    releaseDate: getReleaseDate(),
-    duration: getFilmDuration(),
-    country: getRandomArrayItem(Countries),
-    genres: getFilmsGenres(),
-    description,
-  };
-};
+const generatePopup = () => ({
+  name: getRandomArrayItem(FILMS_NAMES),
+  poster: getRandomArrayItem(Posters),
+  originalName: getRandomArrayItem(FILMS_NAMES),
+  rating: getRating(),
+  director: getRandomArrayItem(Names),
+  writers: getNames(Names),
+  actors: getNames(Names),
+  releaseDate: getReleaseDate(),
+  duration: getFilmDuration(),
+  country: getRandomArrayItem(Countries),
+  genres: getFilmsGenres(),
+  description,
+});
 export {Names, generatePopup};
