@@ -5,42 +5,91 @@ import {createFilmsContainerTemplate} from "./components/films-container";
 import {createFilmCardTemplate} from "./components/film-card";
 import {createButtonShowMoreTemplate} from "./components/button-show-more";
 import {createPopupTemplate} from "./components/popup";
+import {render} from "./utils";
+import {generateFilters} from "./mock/menu";
+import {generateCards} from "./mock/card";
+import {generatePopup} from "./mock/popup";
+import {generateCommentsMarkup} from "./mock/comment";
+import {createCommentTemplate} from "./components/comment-popup";
+import {createFooterStatistic} from "./components/footer-statistic";
 
-const FilmsCount = {
-  DEFAULT_FILMS_COUNT: 5,
-  TOP_RATED_AND_MOST_COMMENTED_FILMS_COUNT: 2
+
+const FilmCount = {
+  ALL: 15,
+  TOP_RATED: 2,
+  MOST_COMMENTED: 2,
 };
 
-const siteMainElement = document.querySelector(`.main`);
-const siteHeaderElement = document.querySelector(`.header`);
-const bodyElement = document.querySelector(`body`);
-
-const render = (container, place, template) => {
-  container.insertAdjacentHTML(place, template);
+const SomeCount = {
+  SHOWING_CARDS_COUNT_ON_START: 5,
+  SHOWING_CARDS_COUNT_BY_BUTTON: 5,
+  COMMENTS_COUNT: 4,
 };
 
-render(siteHeaderElement, `beforeend`, createProfileTemplate());
-render(siteMainElement, `afterbegin`, createMainNavigationTemplate());
-render(siteMainElement, `beforeend`, createFiltersTemplate());
-render(siteMainElement, `beforeend`, createFilmsContainerTemplate());
 
-const filmsListElement = siteMainElement.querySelector(`.films-list`);
-const filmsUnusualListElement = siteMainElement.querySelectorAll(`.films-list--extra`);
-const defaultFilmsContainerElement = filmsListElement.querySelector(`.films-list__container`);
-
-render(filmsListElement, `beforeend`, createButtonShowMoreTemplate());
-
-new Array(FilmsCount.DEFAULT_FILMS_COUNT).fill(``).forEach(() => {
-  render(defaultFilmsContainerElement, `afterbegin`, createFilmCardTemplate());
+const siteMain = document.querySelector(`.main`);
+const siteHeader = document.querySelector(`.header`);
+const body = document.querySelector(`body`);
+const filters = generateFilters();
+const cards = generateCards(FilmCount.ALL);
+let watchedFilmsCount = 0;
+cards.forEach((card) => {
+  if (card.alreadyWatched) {
+    watchedFilmsCount++;
+  }
 });
 
-filmsUnusualListElement.forEach((block) => {
-  const unusualFilmsContainer = block.querySelector(`.films-list__container`);
-  new Array(FilmsCount.TOP_RATED_AND_MOST_COMMENTED_FILMS_COUNT)
-    .fill(``)
-    .forEach(() => {
-      render(unusualFilmsContainer, `afterbegin`, createFilmCardTemplate());
-    });
+render(siteHeader, `beforeend`, createProfileTemplate(watchedFilmsCount));
+render(siteMain, `afterbegin`, createMainNavigationTemplate(filters));
+render(siteMain, `beforeend`, createFiltersTemplate());
+render(siteMain, `beforeend`, createFilmsContainerTemplate());
+
+const filmsList = siteMain.querySelector(`.films-list`);
+const filmsUnusualList = siteMain.querySelectorAll(`.films-list--extra .films-list__container`);
+
+const defaultFilmsContainer = filmsList.querySelector(`.films-list__container`);
+const footerStatistic = body.querySelector(`.footer__statistics`);
+
+const popup = generatePopup();
+const comments = generateCommentsMarkup(SomeCount.COMMENTS_COUNT);
+
+render(filmsList, `beforeend`, createButtonShowMoreTemplate());
+
+let showingCardsCount = SomeCount.SHOWING_CARDS_COUNT_ON_START;
+cards.slice(0, showingCardsCount)
+  .forEach((card) => render(defaultFilmsContainer, `afterbegin`, createFilmCardTemplate(card)));
+
+const showMoreButton = filmsList.querySelector(`.films-list__show-more`);
+showMoreButton.addEventListener(`click`, () => {
+  const prevTasksCount = showingCardsCount;
+  showingCardsCount = showingCardsCount + SomeCount.SHOWING_CARDS_COUNT_BY_BUTTON;
+
+  cards.slice(prevTasksCount, showingCardsCount)
+    .forEach((card) => render(defaultFilmsContainer, `beforeend`, createFilmCardTemplate(card)));
+
+  if (showingCardsCount >= cards.length) {
+    showMoreButton.remove();
+  }
 });
 
-render(bodyElement, `beforeend`, createPopupTemplate());
+render(body, `beforeend`, createPopupTemplate(popup));
+const commentsContainer = body.querySelector(`.film-details__comments-list`);
+comments.forEach((comment) => render(commentsContainer, `afterbegin`, createCommentTemplate(comment)));
+
+render(footerStatistic, `afterbegin`, createFooterStatistic(FilmCount.ALL));
+
+const topRatedFilms = cards.slice().sort((a, b) => parseFloat(b.rating) - parseFloat(a.rating)).slice(0, FilmCount.TOP_RATED);
+const mostCommented = cards.slice().sort((a, b) => parseFloat(b.comments) - parseFloat(a.comments)).slice(0, FilmCount.MOST_COMMENTED);
+
+topRatedFilms.forEach((card) =>{
+  if (card.rating !== undefined) {
+    render(filmsUnusualList[0], `beforeend`, createFilmCardTemplate(card));
+  }
+}
+);
+mostCommented.forEach((card) =>{
+  if (card.comments !== undefined) {
+    render(filmsUnusualList[1], `beforeend`, createFilmCardTemplate((card)));
+  }
+}
+);
