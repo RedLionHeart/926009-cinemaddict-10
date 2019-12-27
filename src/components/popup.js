@@ -1,14 +1,16 @@
-const createGenresMarkup = (genres) => {
-  return genres
-    .map((genre) => {
-      return (
-        `<span class="film-details__genre">${genre}</span>`
-      );
-    })
-    .join(`\n`);
+import {createElement} from "../utils";
+
+const makeTemplateGenerator = (template, array) => {
+  return array.reduce((accumulate, markup, index) => {
+    return (index === 0) ? template(markup) : accumulate + `\n` + template(markup);
+  }, ``);
 };
 
-export const createPopupTemplate = (popup) => {
+const createGenreTemplate = (genre) => (
+  `<span class="film-details__genre">${genre}</span>`
+);
+
+const createPopupTemplate = (popup) => {
   const {name, poster, originalName,
     rating, director, writers,
     actors, releaseDate, duration,
@@ -67,7 +69,7 @@ export const createPopupTemplate = (popup) => {
             <tr class="film-details__row">
               <td class="film-details__term">Genres</td>
               <td class="film-details__cell">
-                ${createGenresMarkup(genres)}
+                ${makeTemplateGenerator(createGenreTemplate, genres)}
               </td>
             </tr>
           </table>
@@ -131,3 +133,26 @@ export const createPopupTemplate = (popup) => {
   </form>
 </section>`;
 };
+
+export default class Popup {
+  constructor(popup) {
+    this._popup = popup;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPopupTemplate(this._popup);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
