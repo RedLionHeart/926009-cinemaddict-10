@@ -6,7 +6,7 @@ const createFooterStatistic = (filmsCount) => {
 
 export default class FooterStatistic {
   constructor(filmsCount) {
-    this._filmsCount = filmsCount
+    this._filmsCount = filmsCount;
     this._element = null;
   }
 
